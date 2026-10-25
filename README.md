@@ -42,7 +42,7 @@ npm run preview   # lokal in der Cloudflare-Laufzeit testen (Variablen in .dev.v
 npm run deploy    # direkt deployen (wrangler login nötig)
 ```
 
-Mit Git-Anbindung im Cloudflare-Dashboard: Build-Befehl `npx opennextjs-cloudflare build`, Deploy-Befehl `npx opennextjs-cloudflare deploy`. `SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN` (und später die Supabase-Werte) als Variablen/Secrets des Workers setzen, `NEXT_PUBLIC_SITE_URL` als Build-Variable.
+Mit Git-Anbindung im Cloudflare-Dashboard (Workers, nicht Pages) reichen die Standard-Befehle: `npm run build` (baut für Cloudflare) und `npx wrangler deploy`. Lokal entwickeln weiter mit `npm run dev`; der reine Next.js-Build ist `npm run build:next`. `SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN` (und später die Supabase-Werte) als Variablen/Secrets des Workers setzen, `NEXT_PUBLIC_SITE_URL` als Build-Variable.
 
 ## Gateway-API (Ladeschrank)
 
