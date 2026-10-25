@@ -1,0 +1,79 @@
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(circle at 50% -10%, rgba(184, 40, 143, 0.3), transparent 50%), var(--ink);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.logo {
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+}
+
+.tabs a {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--mute-on-dark);
+}
+
+.tabs a[aria-current="page"] {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+.demo {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pink-soft);
+  text-align: center;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 8px 16px 40px;
+}
+
+.foot {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px 16px 28px;
+  font-size: 13px;
+  color: var(--faint-on-dark);
+}
+
+.foot a {
+  color: var(--faint-on-dark);
+  text-decoration: none;
+}

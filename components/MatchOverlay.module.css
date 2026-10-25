@@ -1,0 +1,111 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: radial-gradient(circle at 50% 40%, rgba(242, 92, 198, 0.35), rgba(22, 18, 28, 0.96) 60%);
+  backdrop-filter: blur(8px);
+  animation: fade 0.3s ease both;
+  overflow: hidden;
+}
+
+.inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+  width: 100%;
+  max-width: 420px;
+}
+
+.title {
+  font-size: clamp(52px, 15vw, 104px);
+  font-weight: 800;
+  color: var(--pink);
+  animation: pop 0.6s cubic-bezier(0.2, 1.6, 0.4, 1) 0.35s both;
+}
+
+.sub {
+  color: var(--mute-on-dark);
+  font-size: 17px;
+}
+
+.pair {
+  display: flex;
+  margin: 12px 0 10px;
+}
+
+.face {
+  border-radius: 50%;
+  padding: 5px;
+  background: var(--ink);
+  box-shadow: 0 0 0 3px var(--pink);
+}
+
+.left {
+  animation: inLeft 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  margin-right: -18px;
+  z-index: 1;
+}
+
+.right {
+  animation: inRight 0.5s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+.burst {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.burst span {
+  position: absolute;
+  left: -3px;
+  top: 0;
+  width: 6px;
+  height: 46vmax;
+  transform-origin: 3px 0;
+  background: linear-gradient(180deg, rgba(242, 92, 198, 0.45), transparent 60%);
+  border-radius: 3px;
+  animation: rays 0.9s ease-out 0.3s both;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes inLeft {
+  from {
+    transform: translateX(-120px) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes inRight {
+  from {
+    transform: translateX(120px) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes rays {
+  from {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+  }
+}

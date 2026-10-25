@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "clink",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  // Damit reicht im Cloudflare-Dashboard der Standard-Deploy-Befehl `npx wrangler deploy`:
+  // wrangler baut vorher selbst die Next.js-App für Cloudflare.
+  "build": {
+    "command": "npx opennextjs-cloudflare build"
+  }
+}
