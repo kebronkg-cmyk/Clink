@@ -1,0 +1,274 @@
+/* CLINK · Design-Tokens aus dem Pitch Deck */
+:root {
+  --ink: #16121c;
+  --ink-2: #211a2b;
+  --ink-3: #2b2236;
+  --line-dark: #3a3145;
+  --cream: #f6f1ea;
+  --sand: #ede5db;
+  --sand-2: #e4d9cc;
+  --line-light: #d8cdbf;
+  --pink: #f25cc6;
+  --pink-deep: #b8288f;
+  --pink-soft: #f7a6e0;
+  --text-on-dark: #f6f1ea;
+  --mute-on-dark: #cfc6d6;
+  --faint-on-dark: #8e8499;
+  --text-on-light: #16121c;
+  --mute-on-light: #4b4453;
+  --faint-on-light: #6e6577;
+  --ok: #3ddc97;
+  --no: #ff6b6b;
+
+  --font-display: var(--font-syne), "Syne", Arial, sans-serif;
+  --font-body: var(--font-dm-sans), "DM Sans", Arial, sans-serif;
+
+  --radius: 24px;
+  --radius-sm: 14px;
+  --gutter: clamp(16px, 5vw, 64px);
+  --max: 1200px;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--text-on-dark);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--pink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--pink);
+}
+
+.light .eyebrow {
+  color: var(--pink-deep);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 26px;
+  border-radius: 999px;
+  border: 0;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-pink {
+  background: var(--pink);
+  color: var(--ink);
+  box-shadow: 0 0 0 0 rgba(242, 92, 198, 0.5);
+}
+
+.btn-pink:hover {
+  box-shadow: 0 10px 40px -8px rgba(242, 92, 198, 0.7);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-on-dark);
+  border: 1.5px solid var(--line-dark);
+}
+
+.btn-ghost:hover {
+  border-color: var(--pink);
+}
+
+.light .btn-ghost {
+  color: var(--text-on-light);
+  border-color: var(--line-light);
+}
+
+.btn-dark {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Formulare */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field > span {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mute-on-dark);
+}
+
+.field small {
+  font-size: 13px;
+  color: var(--faint-on-dark);
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line-dark);
+  background: var(--ink-2);
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--pink);
+}
+
+textarea.input {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.check {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 15px;
+  color: var(--mute-on-dark);
+  cursor: pointer;
+}
+
+.check input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  accent-color: var(--pink);
+}
+
+.alert {
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ffc9c9;
+  font-size: 15px;
+}
+
+.notice {
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  background: rgba(242, 92, 198, 0.1);
+  border: 1px solid rgba(242, 92, 198, 0.35);
+  font-size: 15px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Syne zeichnet das ß ungewohnt; in Überschriften kommt es aus DM Sans. */
+.sz {
+  font-family: var(--font-body);
+  font-weight: 700;
+}

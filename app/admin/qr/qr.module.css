@@ -1,0 +1,60 @@
+.page {
+  min-height: 100dvh;
+  background: #fff;
+  color: var(--ink);
+  padding: 24px;
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.label {
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  break-inside: avoid;
+}
+
+.qr svg {
+  width: 100%;
+  height: auto;
+}
+
+.brand {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.id {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.hint {
+  font-size: 11px;
+  color: #6e6577;
+}
+
+@media print {
+  .bar {
+    display: none;
+  }
+  .page {
+    padding: 0;
+  }
+}

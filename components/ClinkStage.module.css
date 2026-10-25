@@ -1,0 +1,242 @@
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.hit {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 70%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 92, 198, 0.35), transparent 65%);
+  filter: blur(10px);
+  animation: breathe 3.4s ease-in-out infinite;
+}
+
+.svg {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.left,
+.right,
+.lines,
+.bzz,
+.module {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.loop .left {
+  animation: left 3.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+.loop .right {
+  animation: right 3.4s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+}
+.loop .lines {
+  animation: lines 3.4s ease-out infinite;
+}
+.loop .bzz {
+  animation: bzz 3.4s ease-out infinite;
+}
+.loop .module {
+  animation: module 3.4s ease-out infinite;
+}
+
+.once .left {
+  animation: left 1.6s cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+.once .right {
+  animation: right 1.6s cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+.once .lines {
+  animation: lines 1.6s ease-out both;
+}
+.once .bzz {
+  animation: bzz 1.6s ease-out both;
+}
+.once .module {
+  animation: module 1.6s ease-out both;
+}
+
+.bzz {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 44px;
+  font-style: italic;
+  opacity: 0;
+}
+
+.caption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  max-width: 420px;
+  font-size: 15px;
+  color: var(--mute-on-dark);
+}
+
+.counter {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+/* Ablauf: auseinander → Anstoß bei 40 % → Vibration → wieder auseinander */
+@keyframes left {
+  0%,
+  8% {
+    transform: translate(-90px, 20px) rotate(-22deg);
+  }
+  40% {
+    transform: translate(6px, 0) rotate(0deg);
+  }
+  44% {
+    transform: translate(-10px, 0) rotate(-2deg);
+  }
+  47%,
+  53%,
+  59% {
+    transform: translate(-3px, -2px) rotate(-1deg);
+  }
+  50%,
+  56%,
+  62% {
+    transform: translate(-7px, 2px) rotate(-1deg);
+  }
+  78% {
+    transform: translate(-5px, 0) rotate(-1deg);
+  }
+  100% {
+    transform: translate(-90px, 20px) rotate(-22deg);
+  }
+}
+
+@keyframes right {
+  0%,
+  8% {
+    transform: translate(90px, 20px) rotate(22deg);
+  }
+  40% {
+    transform: translate(-6px, 0) rotate(0deg);
+  }
+  44% {
+    transform: translate(10px, 0) rotate(2deg);
+  }
+  47%,
+  53%,
+  59% {
+    transform: translate(3px, 2px) rotate(1deg);
+  }
+  50%,
+  56%,
+  62% {
+    transform: translate(7px, -2px) rotate(1deg);
+  }
+  78% {
+    transform: translate(5px, 0) rotate(1deg);
+  }
+  100% {
+    transform: translate(90px, 20px) rotate(22deg);
+  }
+}
+
+@keyframes lines {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.4);
+  }
+  44% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1);
+  }
+  85%,
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.9);
+  }
+}
+
+@keyframes bzz {
+  0%,
+  44% {
+    opacity: 0;
+    transform: translate(-20px, 20px) rotate(-8deg) scale(0.6);
+  }
+  52% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(-8deg) scale(1);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(8px, -8px) rotate(-6deg) scale(1);
+  }
+  86%,
+  100% {
+    opacity: 0;
+    transform: translate(14px, -16px) rotate(-6deg) scale(0.9);
+  }
+}
+
+@keyframes module {
+  0%,
+  40% {
+    fill: #f25cc6;
+    filter: none;
+  }
+  46%,
+  70% {
+    fill: #f7a6e0;
+    filter: drop-shadow(0 0 18px #f25cc6);
+  }
+  85%,
+  100% {
+    fill: #f25cc6;
+    filter: none;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  30%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
