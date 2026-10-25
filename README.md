@@ -33,6 +33,17 @@ Ohne Supabase-Zugangsdaten läuft die Seite im **Demo-Modus**: Beispieldaten im 
 2. Umgebungsvariablen nach `.env.example` setzen (`SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN`, `NEXT_PUBLIC_SITE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Ohne `SESSION_SECRET` startet die Produktion bewusst nicht.
 3. Auf Vercel oder Netlify deployen, Domain `clink.wedance.vip`.
 
+## Cloudflare (Workers)
+
+Läuft über den OpenNext-Adapter (`@opennextjs/cloudflare`), Konfiguration in `wrangler.jsonc` und `open-next.config.ts`.
+
+```bash
+npm run preview   # lokal in der Cloudflare-Laufzeit testen (Variablen in .dev.vars)
+npm run deploy    # direkt deployen (wrangler login nötig)
+```
+
+Mit Git-Anbindung im Cloudflare-Dashboard: Build-Befehl `npx opennextjs-cloudflare build`, Deploy-Befehl `npx opennextjs-cloudflare deploy`. `SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN` (und später die Supabase-Werte) als Variablen/Secrets des Workers setzen, `NEXT_PUBLIC_SITE_URL` als Build-Variable.
+
 ## Gateway-API (Ladeschrank)
 
 Alle Aufrufe mit `Authorization: Bearer $GATEWAY_TOKEN`.
