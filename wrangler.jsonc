@@ -8,5 +8,10 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Damit reicht im Cloudflare-Dashboard der Standard-Deploy-Befehl `npx wrangler deploy`:
+  // wrangler baut vorher selbst die Next.js-App für Cloudflare.
+  "build": {
+    "command": "npx opennextjs-cloudflare build"
+  }
 }
