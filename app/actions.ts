@@ -4,7 +4,18 @@ import { redirect } from "next/navigation";
 import { getStore } from "@/lib/store";
 import { DEMO_GUEST_ID, resetDemoGuest } from "@/lib/store/memory";
 import { MIN_AGE } from "@/lib/config";
-import { checkin, normalizeInstagram, swipe, type SwipeResult } from "@/lib/service";
+import {
+  checkin,
+  getChat,
+  normalizeInstagram,
+  sendMessage,
+  swipe,
+  unmatch,
+  voteExtend,
+  type ChatResult,
+  type ChatView,
+  type SwipeResult,
+} from "@/lib/service";
 import { clearGuestSession, getGuestId, setGuestSession } from "@/lib/session";
 
 export type FormState = { error?: string; ok?: boolean } | null;
@@ -78,6 +89,45 @@ export async function submitSwipe(eventId: string, toGuest: string, richtung: "r
   const guestId = await getGuestId();
   if (!guestId) return { ok: false, error: "Deine Sitzung ist abgelaufen." };
   return swipe(guestId, eventId, toGuest, richtung);
+}
+
+// ---------- Chat ----------
+
+export async function loadChat(eventId: string, partnerId: string): Promise<ChatView | null> {
+  const guestId = await getGuestId();
+  return guestId ? getChat(guestId, eventId, partnerId) : null;
+}
+
+export async function sendChatMessage(
+  eventId: string,
+  partnerId: string,
+  input: { karte: string } | { text: string },
+): Promise<ChatResult> {
+  const guestId = await getGuestId();
+  if (!guestId) return { ok: false, error: "Deine Sitzung ist abgelaufen." };
+  const res = await sendMessage(guestId, eventId, partnerId, input);
+  if (res.ok && getStore().mode === "demo" && partnerId.startsWith("demo-")) await demoReply(guestId, eventId, partnerId);
+  return res;
+}
+
+/** Demo-Modus: Die Beispiel-Person antwortet einmal mit einer Karte, damit sich der Chat lebendig anfühlt. */
+async function demoReply(guestId: string, eventId: string, partnerId: string) {
+  const chat = await getChat(guestId, eventId, partnerId);
+  if (!chat || chat.nachrichten.some((m) => !m.vonMir)) return;
+  const replies = ["wieder-naechster", "tanz-seit", "abend-gesucht", "humor-wer"];
+  await sendMessage(partnerId, eventId, guestId, { karte: replies[chat.partner.vorname.length % replies.length] });
+}
+
+export async function extendChat(eventId: string, partnerId: string) {
+  const guestId = await getGuestId();
+  if (!guestId) return { ok: false as const, error: "Deine Sitzung ist abgelaufen." };
+  return voteExtend(guestId, eventId, partnerId);
+}
+
+export async function unmatchAction(eventId: string, partnerId: string) {
+  const guestId = await getGuestId();
+  if (guestId) await unmatch(guestId, eventId, partnerId);
+  redirect("/app/matches");
 }
 
 export async function deleteProfile() {

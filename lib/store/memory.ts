@@ -7,6 +7,8 @@ import type {
   Guest,
   Lead,
   Match,
+  MatchKey,
+  Message,
   Settings,
   Swipe,
 } from "../types";
@@ -23,6 +25,7 @@ type Db = {
   encounters: Encounter[];
   swipes: Swipe[];
   matches: Match[];
+  messages: Message[];
   settings: Settings;
   leads: Lead[];
 };
@@ -126,6 +129,7 @@ function seed(): Db {
     encounters,
     swipes,
     matches: [],
+    messages: [],
     settings: { ...DEFAULT_SETTINGS, updated_at: hours(-48) },
     leads: [],
   };
@@ -140,9 +144,13 @@ function db(): Db {
 /** Setzt nur die Swipes und Matches des Beispiel-Gastes zurück, damit die Demo frisch startet. */
 export function resetDemoGuest() {
   const d = db();
+  const mine = (x: { guest_a: string; guest_b: string }) => x.guest_a === DEMO_GUEST_ID || x.guest_b === DEMO_GUEST_ID;
   d.swipes = d.swipes.filter((s) => s.from_guest !== DEMO_GUEST_ID);
-  d.matches = d.matches.filter((m) => m.guest_a !== DEMO_GUEST_ID && m.guest_b !== DEMO_GUEST_ID);
+  d.matches = d.matches.filter((m) => !mine(m));
+  d.messages = d.messages.filter((m) => !mine(m));
 }
+
+const sameKey = (a: MatchKey, b: MatchKey) => a.event_id === b.event_id && a.guest_a === b.guest_a && a.guest_b === b.guest_b;
 
 export const memoryStore: Store = {
   mode: "demo",
@@ -201,6 +209,7 @@ export const memoryStore: Store = {
     d.checkins = d.checkins.filter((c) => c.guest_id !== id);
     d.swipes = d.swipes.filter((s) => s.from_guest !== id && s.to_guest !== id);
     d.matches = d.matches.filter((m) => m.guest_a !== id && m.guest_b !== id);
+    d.messages = d.messages.filter((m) => m.guest_a !== id && m.guest_b !== id);
   },
   async uploadPhoto(_guestId, data, contentType) {
     // Im Demo-Modus bleibt das (verkleinerte) Foto als Data-URL im Speicher.
@@ -276,6 +285,30 @@ export const memoryStore: Store = {
       (x) => x.event_id === m.event_id && x.guest_a === m.guest_a && x.guest_b === m.guest_b,
     );
     if (!exists) db().matches.push({ ...m, erstellt: now() });
+  },
+  async updateMatch(key, patch) {
+    const m = db().matches.find((x) => sameKey(x, key));
+    if (m) Object.assign(m, patch);
+  },
+  async deleteMatch(key) {
+    const d = db();
+    d.matches = d.matches.filter((x) => !sameKey(x, key));
+    d.messages = d.messages.filter((x) => !sameKey(x, key));
+  },
+
+  async listMessages(key) {
+    return db()
+      .messages.filter((x) => sameKey(x, key))
+      .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  },
+  async insertMessage(m) {
+    const msg: Message = { ...m, id: uid(), created_at: now() };
+    db().messages.push(msg);
+    return msg;
+  },
+  async deleteMessages(key) {
+    const d = db();
+    d.messages = d.messages.filter((x) => !sameKey(x, key));
   },
 
   async getSettings() {

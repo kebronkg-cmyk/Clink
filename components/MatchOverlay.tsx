@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { Avatar } from "./Avatar";
 import styles from "./MatchOverlay.module.css";
 
-export type MatchInfo = { id: string; vorname: string; foto: string | null; instagram: string | null };
+export type MatchInfo = { id: string; vorname: string; foto: string | null; instagram: string | null; chat?: string };
 
 export function MatchOverlay({
   me,
@@ -43,7 +44,14 @@ export function MatchOverlay({
             <Avatar name={partner.vorname} foto={partner.foto} id={partner.id} size={124} />
           </div>
         </div>
-        {partner.instagram ? (
+        {partner.chat ? (
+          <>
+            <Link className="btn btn-pink" href={partner.chat}>
+              🥂 Ersten Clink schicken
+            </Link>
+            <p className={styles.small}>Der Chat ist 72 Stunden offen.</p>
+          </>
+        ) : partner.instagram ? (
           <a className="btn btn-pink" href={`https://instagram.com/${partner.instagram}`} target="_blank" rel="noreferrer">
             @{partner.instagram} auf Instagram
           </a>

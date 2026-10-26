@@ -67,9 +67,26 @@ create table if not exists matches (
   guest_a uuid not null references guests(id) on delete cascade,
   guest_b uuid not null references guests(id) on delete cascade,
   erstellt timestamptz not null default now(),
+  chat_until timestamptz not null,
+  verlaengern_a boolean not null default false,
+  verlaengern_b boolean not null default false,
   primary key (event_id, guest_a, guest_b),
   check (guest_a < guest_b)
 );
+
+-- Chat nach einem Match: 72 h offen, danach gelöscht. Erste Nachricht ist eine Antwortkarte.
+create table if not exists messages (
+  id uuid primary key default gen_random_uuid(),
+  event_id uuid not null,
+  guest_a uuid not null,
+  guest_b uuid not null,
+  from_guest uuid not null references guests(id) on delete cascade,
+  karte text,
+  text text not null check (char_length(text) <= 500),
+  created_at timestamptz not null default now(),
+  foreign key (event_id, guest_a, guest_b) references matches(event_id, guest_a, guest_b) on delete cascade
+);
+create index if not exists messages_match_idx on messages (event_id, guest_a, guest_b, created_at);
 
 create table if not exists settings (
   id smallint primary key default 1 check (id = 1),
@@ -98,9 +115,15 @@ alter table checkins enable row level security;
 alter table encounters enable row level security;
 alter table swipes enable row level security;
 alter table matches enable row level security;
+alter table messages enable row level security;
 alter table settings enable row level security;
 alter table leads enable row level security;
 
 -- Profilfotos: öffentlicher Bucket, Dateinamen sind zufällige Gast-IDs.
 insert into storage.buckets (id, name, public) values ('photos', 'photos', true)
 on conflict (id) do nothing;
+
+-- Upgrade einer bestehenden Datenbank ohne Chat:
+-- alter table matches add column if not exists chat_until timestamptz not null default now() + interval '72 hours';
+-- alter table matches add column if not exists verlaengern_a boolean not null default false;
+-- alter table matches add column if not exists verlaengern_b boolean not null default false;

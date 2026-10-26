@@ -1,6 +1,8 @@
 import "server-only";
 import { getStore } from "./store";
-import type { ClinkEvent, Encounter, Guest, SwipeDirection } from "./types";
+import type { ClinkEvent, Encounter, Guest, Match, MatchKey, SwipeDirection } from "./types";
+import { CHAT_WINDOW_HOURS, MESSAGE_MAX } from "./config";
+import { getCard } from "./cards";
 
 // Ablauf-Logik über dem Speicher: Check-in, Import, Swipen, Matches, Löschfristen.
 
@@ -8,10 +10,16 @@ export const pairKey = (a: string, b: string): [string, string] => (a < b ? [a, 
 
 export const isOpen = (e: ClinkEvent, at = Date.now()) => new Date(e.swipe_until).getTime() > at;
 
-/** Löschung nach Ablauf der Frist: Begegnungen und Swipes. Matches bleiben. */
+/** Löschung nach Ablauf der Fristen: Begegnungen und Swipes, abgelaufene Chats. Matches bleiben. */
 export async function purgeExpired(): Promise<number> {
   const store = getStore();
   let purged = 0;
+  for (const m of await store.listMatches({})) {
+    if (new Date(m.chat_until).getTime() <= Date.now() && (await store.listMessages(m)).length) {
+      await store.deleteMessages(m);
+      purged++;
+    }
+  }
   for (const e of await store.listEvents()) {
     if (isOpen(e)) continue;
     const enc = await store.listEncounters(e.id);
@@ -190,8 +198,11 @@ export async function guestEvents(guestId: string): Promise<GuestEventView[]> {
 }
 
 export type SwipeResult =
-  | { ok: true; match: null | { vorname: string; foto: string | null; instagram: string | null } }
+  | { ok: true; match: null | { vorname: string; foto: string | null; instagram: string | null; chat: string } }
   | { ok: false; error: string };
+
+/** URL des Chats mit einem Match, aus Sicht des eingeloggten Gastes. */
+export const chatPath = (eventId: string, partnerId: string) => `/app/chat/${eventId}/${partnerId}`;
 
 export async function swipe(guestId: string, eventId: string, toGuest: string, richtung: SwipeDirection): Promise<SwipeResult> {
   const store = getStore();
@@ -209,38 +220,169 @@ export async function swipe(guestId: string, eventId: string, toGuest: string, r
   if (back[0]?.richtung !== "rechts") return { ok: true, match: null };
 
   const [guest_a, guest_b] = pairKey(guestId, toGuest);
-  await store.insertMatch({ event_id: eventId, guest_a, guest_b });
+  await store.insertMatch({
+    event_id: eventId,
+    guest_a,
+    guest_b,
+    chat_until: new Date(Date.now() + CHAT_WINDOW_HOURS * 3600_000).toISOString(),
+    verlaengern_a: false,
+    verlaengern_b: false,
+  });
   const partner = await store.getGuest(toGuest);
   return {
     ok: true,
     match: partner
-      ? { vorname: partner.vorname, foto: partner.foto, instagram: partner.instagram_freigabe ? partner.instagram : null }
+      ? {
+          vorname: partner.vorname,
+          foto: partner.foto,
+          instagram: partner.instagram_freigabe ? partner.instagram : null,
+          chat: chatPath(eventId, toGuest),
+        }
       : null,
   };
 }
 
-export type MatchView = PublicProfile & { instagram: string | null; event: string; erstellt: string };
+export type MatchView = PublicProfile & {
+  instagram: string | null;
+  event: string;
+  erstellt: string;
+  chat: string;
+  chatOffen: boolean;
+  chatUntil: string;
+  letzte: null | { vonMir: boolean; text: string; zeit: string };
+};
 
 export async function guestMatches(guestId: string): Promise<MatchView[]> {
   const store = getStore();
   const matches = await store.listMatches({ guest_id: guestId });
   const partners = new Map((await store.getGuests(matches.map((m) => (m.guest_a === guestId ? m.guest_b : m.guest_a)))).map((g) => [g.id, g]));
   const events = new Map((await store.listEvents()).map((e) => [e.id, e]));
-  return matches
-    .map((m) => {
+  const views = await Promise.all(
+    matches.map(async (m): Promise<MatchView | null> => {
       const p = partners.get(m.guest_a === guestId ? m.guest_b : m.guest_a);
       if (!p) return null;
+      const open = new Date(m.chat_until).getTime() > Date.now();
+      const last = open ? (await store.listMessages(m)).at(-1) : undefined;
       return {
         ...toPublic(p),
         // Datensparsam: Instagram nur nach Match und nur wenn freigegeben.
         instagram: p.instagram_freigabe ? p.instagram : null,
         event: events.get(m.event_id)?.name ?? "",
         erstellt: m.erstellt,
+        chat: chatPath(m.event_id, p.id),
+        chatOffen: open,
+        chatUntil: m.chat_until,
+        letzte: last ? { vonMir: last.from_guest === guestId, text: last.text, zeit: last.created_at } : null,
       };
-    })
+    }),
+  );
+  return views
     .filter((x): x is MatchView => x !== null)
-    .sort((a, b) => b.erstellt.localeCompare(a.erstellt));
+    .sort((a, b) => (b.letzte?.zeit ?? b.erstellt).localeCompare(a.letzte?.zeit ?? a.erstellt));
 }
+
+// ---------- Chat ----------
+
+async function findMatch(guestId: string, eventId: string, partnerId: string): Promise<Match | null> {
+  const [guest_a, guest_b] = pairKey(guestId, partnerId);
+  const matches = await getStore().listMatches({ event_id: eventId, guest_id: guestId });
+  return matches.find((m) => m.guest_a === guest_a && m.guest_b === guest_b) ?? null;
+}
+
+export type ChatView = {
+  eventId: string;
+  partner: PublicProfile & { instagram: string | null };
+  event: string;
+  chatUntil: string;
+  offen: boolean;
+  ichVerlaengere: boolean;
+  partnerVerlaengert: boolean;
+  nachrichten: Array<{ id: string; vonMir: boolean; karte: boolean; text: string; zeit: string }>;
+};
+
+export async function getChat(guestId: string, eventId: string, partnerId: string): Promise<ChatView | null> {
+  const store = getStore();
+  const match = await findMatch(guestId, eventId, partnerId);
+  const partner = match ? await store.getGuest(partnerId) : null;
+  if (!match || !partner) return null;
+  const iAmA = match.guest_a === guestId;
+  const offen = new Date(match.chat_until).getTime() > Date.now();
+  const messages = offen ? await store.listMessages(match) : [];
+  return {
+    eventId,
+    partner: { ...toPublic(partner), instagram: partner.instagram_freigabe ? partner.instagram : null },
+    event: (await store.getEvent(eventId))?.name ?? "",
+    chatUntil: match.chat_until,
+    offen,
+    ichVerlaengere: iAmA ? match.verlaengern_a : match.verlaengern_b,
+    partnerVerlaengert: iAmA ? match.verlaengern_b : match.verlaengern_a,
+    nachrichten: messages.map((m) => ({
+      id: m.id,
+      vonMir: m.from_guest === guestId,
+      karte: m.karte !== null,
+      text: m.text,
+      zeit: m.created_at,
+    })),
+  };
+}
+
+export type ChatResult = { ok: true } | { ok: false; error: string };
+
+/** Erste Nachricht im Chat muss eine Antwortkarte sein, danach ist freier Text erlaubt. */
+export async function sendMessage(
+  guestId: string,
+  eventId: string,
+  partnerId: string,
+  input: { karte: string } | { text: string },
+): Promise<ChatResult> {
+  const store = getStore();
+  const match = await findMatch(guestId, eventId, partnerId);
+  if (!match) return { ok: false, error: "Dieses Match gibt es nicht mehr." };
+  if (new Date(match.chat_until).getTime() <= Date.now()) return { ok: false, error: "Der Chat ist abgelaufen." };
+
+  if ("karte" in input) {
+    const card = getCard(input.karte);
+    if (!card) return { ok: false, error: "Diese Karte gibt es nicht." };
+    await store.insertMessage({ ...keyOf(match), from_guest: guestId, karte: card.id, text: card.text });
+    return { ok: true };
+  }
+
+  const text = input.text.replace(/\s+/g, " ").trim().slice(0, MESSAGE_MAX);
+  if (!text) return { ok: false, error: "Die Nachricht ist leer." };
+  if (!(await store.listMessages(match)).length) return { ok: false, error: "Starte mit einer Antwortkarte." };
+  await store.insertMessage({ ...keyOf(match), from_guest: guestId, karte: null, text });
+  return { ok: true };
+}
+
+/** Beide tippen auf "Verlängern" → Chat läuft 72 h länger, die Stimmen werden zurückgesetzt. */
+export async function voteExtend(guestId: string, eventId: string, partnerId: string): Promise<ChatResult & { verlaengert?: boolean }> {
+  const store = getStore();
+  const match = await findMatch(guestId, eventId, partnerId);
+  if (!match) return { ok: false, error: "Dieses Match gibt es nicht mehr." };
+  const until = new Date(match.chat_until).getTime();
+  if (until <= Date.now()) return { ok: false, error: "Der Chat ist schon abgelaufen." };
+
+  const iAmA = match.guest_a === guestId;
+  const other = iAmA ? match.verlaengern_b : match.verlaengern_a;
+  if (other) {
+    await store.updateMatch(match, {
+      chat_until: new Date(until + CHAT_WINDOW_HOURS * 3600_000).toISOString(),
+      verlaengern_a: false,
+      verlaengern_b: false,
+    });
+    return { ok: true, verlaengert: true };
+  }
+  await store.updateMatch(match, iAmA ? { verlaengern_a: true } : { verlaengern_b: true });
+  return { ok: true, verlaengert: false };
+}
+
+/** Match auflösen: Chat und Match verschwinden für beide. */
+export async function unmatch(guestId: string, eventId: string, partnerId: string): Promise<void> {
+  const match = await findMatch(guestId, eventId, partnerId);
+  if (match) await getStore().deleteMatch(match);
+}
+
+const keyOf = (m: MatchKey): MatchKey => ({ event_id: m.event_id, guest_a: m.guest_a, guest_b: m.guest_b });
 
 // ---------- Statistik ----------
 

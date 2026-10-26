@@ -109,3 +109,9 @@
     opacity: 0;
   }
 }
+
+.small {
+  margin-top: -8px;
+  font-size: 13px;
+  color: var(--faint-on-dark);
+}

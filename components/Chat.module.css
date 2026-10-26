@@ -1,0 +1,284 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: calc(100dvh - 180px);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back {
+  font-size: 24px;
+  text-decoration: none;
+  color: var(--mute-on-dark);
+  padding: 4px 6px 4px 0;
+}
+
+.who {
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.name span {
+  font-weight: 400;
+  color: var(--mute-on-dark);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--faint-on-dark);
+}
+
+.ig {
+  margin-left: auto;
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pink);
+  text-decoration: none;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.extend {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--pink);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.waiting {
+  color: var(--pink-soft);
+  font-weight: 500;
+}
+
+.messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.intro {
+  margin: 12px 0;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  background: radial-gradient(circle at 50% 0%, rgba(242, 92, 198, 0.25), transparent 70%), var(--ink-2);
+  color: var(--mute-on-dark);
+  font-size: 15px;
+}
+
+.introTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.15;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.msg {
+  max-width: 82%;
+  padding: 10px 14px 6px;
+  border-radius: 20px;
+  font-size: 16px;
+  line-height: 1.4;
+  animation: pop 0.25s ease both;
+  overflow-wrap: anywhere;
+}
+
+.msg time {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  opacity: 0.6;
+  text-align: right;
+}
+
+.mine {
+  align-self: flex-end;
+  background: var(--pink);
+  color: var(--ink);
+  border-bottom-right-radius: 6px;
+}
+
+.theirs {
+  align-self: flex-start;
+  background: var(--ink-3);
+  border-bottom-left-radius: 6px;
+}
+
+.card {
+  padding-top: 8px;
+  box-shadow: 0 0 0 2px var(--pink-soft) inset;
+}
+
+.mine.card {
+  background: linear-gradient(135deg, var(--pink), var(--pink-soft));
+}
+
+.cardTag {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: 2px;
+}
+
+.composer {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  gap: 10px;
+  padding: 10px 0 4px;
+  background: linear-gradient(180deg, transparent, var(--ink) 20%);
+}
+
+.cards {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 20px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+}
+
+.groups {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.group {
+  flex: none;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-dark);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mute-on-dark);
+  cursor: pointer;
+}
+
+.group[aria-selected="true"] {
+  background: var(--cream);
+  color: var(--ink);
+  border-color: var(--cream);
+}
+
+.cardList {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.cardBtn {
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--line-dark);
+  background: var(--ink);
+  font-size: 15px;
+  line-height: 1.35;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.cardBtn:hover,
+.cardBtn:focus-visible {
+  border-color: var(--pink);
+}
+
+.cardBtn:active {
+  transform: scale(0.98);
+}
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.cardToggle {
+  flex: none;
+  width: 52px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-dark);
+  background: var(--ink-2);
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.cardToggleOn {
+  border-color: var(--pink);
+  background: rgba(242, 92, 198, 0.15);
+}
+
+.text {
+  flex: 1;
+  border-radius: 999px;
+}
+
+.sendBtn {
+  flex: none;
+  width: 52px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.unmatch {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.unmatchBtn {
+  border: 0;
+  background: none;
+  font-size: 13px;
+  color: var(--faint-on-dark);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/LegalPage";
-import { MIN_AGE, SWIPE_WINDOW_HOURS } from "@/lib/config";
+import { CHAT_WINDOW_HOURS, MIN_AGE, SWIPE_WINDOW_HOURS } from "@/lib/config";
 
 export const metadata: Metadata = { title: "Datenschutz" };
 
@@ -33,6 +33,9 @@ export default function Datenschutz() {
           <strong>Swipes und Matches:</strong> wer wen nach rechts oder links geswipet hat, und gegenseitige Matches.
         </li>
         <li>
+          <strong>Chat nach einem Match:</strong> die Nachrichten zwischen euch beiden, mit Zeitpunkt.
+        </li>
+        <li>
           <strong>Kontaktanfragen von Locations:</strong> Name, E-Mail, Location, Stadt und Nachricht.
         </li>
       </ul>
@@ -42,6 +45,7 @@ export default function Datenschutz() {
         <li>Personen, mit denen du geclinkt hast, sehen am nächsten Tag deinen Vornamen, dein Alter und dein Foto.</li>
         <li>Ob du links oder rechts geswipet hast, sieht niemand.</li>
         <li>Dein Instagram-Name wird nur nach einem gegenseitigen Match gezeigt und nur, wenn du ihn freigegeben hast.</li>
+        <li>Chat-Nachrichten sehen nur die beiden Personen des Matches.</li>
         <li>Telefonnummern werden nicht erfasst. Deine E-Mail-Adresse sieht kein anderer Gast.</li>
       </ul>
 
@@ -54,6 +58,10 @@ export default function Datenschutz() {
       <h2>Wie lange</h2>
       <ul>
         <li>Begegnungen und Swipes: bis zum Ende der Swipe-Zeit ({SWIPE_WINDOW_HOURS} Stunden nach dem Abend), dann werden sie gelöscht.</li>
+        <li>
+          Chat-Nachrichten: {CHAT_WINDOW_HOURS} Stunden ab dem Match, bei gemeinsamer Verlängerung entsprechend länger. Danach werden sie
+          gelöscht. Löst eine Person das Match auf, wird der Chat sofort gelöscht.
+        </li>
         <li>Matches und Profil: bis du dein Profil löschst. <mark>[Automatische Löschung inaktiver Profile nach … Monaten festlegen]</mark></li>
         <li>Kontaktanfragen: bis die Anfrage erledigt ist, höchstens <mark>[…]</mark>.</li>
       </ul>

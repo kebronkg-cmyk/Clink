@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="de" data-scroll-behavior="smooth" className={`${syne.variable} ${dmSans.variable}`}>
       <body>{children}</body>
     </html>
   );

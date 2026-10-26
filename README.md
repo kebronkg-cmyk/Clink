@@ -22,7 +22,8 @@ Ohne Supabase-Zugangsdaten läuft die Seite im **Demo-Modus**: Beispieldaten im 
 | `/checkin/fertig` | Bestätigung + persönlicher Link für den nächsten Tag |
 | `/l/<token>` | Persönlicher Link, meldet den Gast auf dem Gerät an |
 | `/app` | Begegnungen des letzten Abends swipen, Countdown bis zum Verfall, Profil löschen |
-| `/app/matches` | Gegenseitige Matches mit freigegebenem Instagram |
+| `/app/matches` | Gegenseitige Matches mit Chat-Vorschau und Restzeit |
+| `/app/chat/<event>/<gast>` | 72-h-Chat: erste Nachricht per Antwortkarte (`lib/cards.ts`), dann frei; gemeinsam um 72 h verlängerbar; Match auflösen |
 | `/admin` | Events, Check-ins, Bänder, CSV-Import, Firmware-Werte, Statistik, Anfragen |
 | `/admin/qr` | Druckbogen mit einem QR-Code pro Band |
 | `/impressum`, `/datenschutz` | Entwürfe mit markierten Platzhaltern |
@@ -66,6 +67,7 @@ CSV-Format: `band_a,band_b,timestamp` (Kopfzeile optional). Jedes Paar wird pro 
 
 - Match nur bei gegenseitigem Rechts-Swipe; geswipet werden kann nur, wer wirklich geclinkt hat.
 - Instagram nur nach Match und nur bei Freigabe; Telefonnummern werden nicht erfasst.
+- Chat: 72 h ab Match (`CHAT_WINDOW_HOURS`), erste Nachricht ist eine Antwortkarte, Verlängerung nur wenn beide tippen, danach werden die Nachrichten gelöscht.
 - Swipe-Frist: Ende des Abends (06:00) + 72 h (`lib/config.ts`). Danach werden Begegnungen und Swipes gelöscht, Matches bleiben.
 - Ein Band gehört pro Event genau einem Gast; Bänder werden über Events hinweg wiederverwendet.
 - Check-in ab 18.
@@ -73,4 +75,5 @@ CSV-Format: `band_a,band_b,timestamp` (Kopfzeile optional). Jedes Paar wird pro 
 ## Noch nicht drin (laut Spezifikation „kann warten“ bzw. offen)
 
 - Versand des Links per Mail/SMS (Feld für E-Mail ist da, Versand fehlt)
-- Eigener Chat, WeDance-Login, Live-Regler per Web Bluetooth
+- WeDance-Login, Live-Regler per Web Bluetooth
+- Chat in Echtzeit (jetzt: Nachladen alle 4 s) und Push-Benachrichtigungen
