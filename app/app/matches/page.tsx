@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GuestShell } from "@/components/GuestShell";
 import { Avatar } from "@/components/Avatar";
+import { Countdown } from "@/components/Countdown";
 import { getStore } from "@/lib/store";
 import { guestMatches } from "@/lib/service";
 import { getGuestId } from "@/lib/session";
@@ -33,30 +34,33 @@ export default async function MatchesPage() {
           <p className={styles.text}>Ihr wolltet euch beide wiedersehen. Jetzt seid ihr dran.</p>
           <ul className={styles.list}>
             {matches.map((m) => (
-              <li key={m.id + m.event} className={styles.match}>
-                <Avatar name={m.vorname} foto={m.foto} id={m.id} size={60} />
-                <div>
-                  <p className={styles.matchName}>
-                    {m.vorname} <span style={{ fontWeight: 400, color: "var(--mute-on-dark)" }}>{m.alter}</span>
-                  </p>
-                  <p className={styles.matchMeta}>{m.event}</p>
-                </div>
-                {m.instagram ? (
-                  <a className={`btn btn-pink ${styles.ig}`} href={`https://instagram.com/${m.instagram}`} target="_blank" rel="noreferrer">
-                    @{m.instagram}
-                  </a>
-                ) : (
-                  <span className={styles.matchMeta} style={{ marginLeft: "auto", textAlign: "right" }}>
-                    kein Instagram
-                    <br />
-                    freigegeben
+              <li key={m.chat}>
+                <Link href={m.chat} className={styles.match}>
+                  <Avatar name={m.vorname} foto={m.foto} id={m.id} size={60} />
+                  <div className={styles.matchBody}>
+                    <p className={styles.matchName}>
+                      {m.vorname} <span style={{ fontWeight: 400, color: "var(--mute-on-dark)" }}>{m.alter}</span>
+                    </p>
+                    <p className={styles.preview}>
+                      {!m.chatOffen
+                        ? m.instagram
+                          ? `Chat abgelaufen · @${m.instagram}`
+                          : "Chat abgelaufen"
+                        : m.letzte
+                          ? `${m.letzte.vonMir ? "Du: " : ""}${m.letzte.text}`
+                          : "🥂 Schick den ersten Clink"}
+                    </p>
+                  </div>
+                  <span className={styles.matchSide}>
+                    {m.chatOffen && m.letzte && !m.letzte.vonMir && <span className={styles.dot} aria-label="Neue Nachricht" />}
+                    {m.chatOffen && <Countdown until={m.chatUntil} />}
                   </span>
-                )}
+                </Link>
               </li>
             ))}
           </ul>
           <p className={styles.small} style={{ marginTop: 20 }}>
-            Ein Chat direkt in CLINK, ganz ohne Nummerntausch, kommt nach dem Pilot.
+            Jeder Chat ist 72 Stunden offen. Wollt ihr beide weiterschreiben, verlängert ihn gemeinsam.
           </p>
         </>
       )}

@@ -3,7 +3,7 @@ import { ClinkStage } from "@/components/ClinkStage";
 import { SwipeDemo } from "@/components/SwipeDemo";
 import { LeadForm } from "@/components/LeadForm";
 import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
-import { SWIPE_WINDOW_HOURS, MIN_AGE } from "@/lib/config";
+import { CHAT_WINDOW_HOURS, SWIPE_WINDOW_HOURS, MIN_AGE } from "@/lib/config";
 import { sz } from "@/components/Sz";
 import s from "./landing.module.css";
 
@@ -85,7 +85,7 @@ const STEPS: Array<{ n: string; title: string; text: string; icon: React.ReactNo
 
 const PROMISES = [
   ["Nur, wenn beide wollen", "Ein Match entsteht ausschließlich, wenn ihr euch gegenseitig nach rechts swipet. Wer links swipet, bleibt unsichtbar."],
-  ["Keine Nummern im Club", "Kein Handy auf der Tanzfläche, kein Nummerntausch. Nach dem Match seht ihr nur das Instagram, das ihr freigebt."],
+  ["Keine Nummern im Club", "Kein Handy auf der Tanzfläche, kein Nummerntausch. Nach dem Match schreibt ihr euch direkt in CLINK, Instagram nur, wenn ihr es freigebt."],
   ["Das Band kennt keine Namen", "Auf dem Band liegen nur Nummern. Erst der Check-in verbindet es für genau einen Abend mit dir."],
   ["Daten mit Ablaufdatum", `Nach ${SWIPE_WINDOW_HOURS} Stunden verfallen Begegnungen und Swipes und werden gelöscht. Dein Profil löschst du jederzeit selbst.`],
 ];
@@ -104,7 +104,10 @@ const FAQ = [
     "Wie lange kann ich swipen?",
     `${SWIPE_WINDOW_HOURS} Stunden nach dem Abend. Danach verfällt alles, also nicht zu lange warten.`,
   ],
-  ["Was passiert nach einem Match?", "Ihr seht beide das Instagram der anderen Person, sofern es beim Check-in freigegeben wurde. Telefonnummern sieht niemand."],
+  [
+    "Was passiert nach einem Match?",
+    `Ein Chat öffnet sich für ${CHAT_WINDOW_HOURS} Stunden. Den ersten Clink schickst du mit einer Antwortkarte, danach schreibt ihr frei. Wollt ihr beide länger, verlängert ihr gemeinsam. Instagram seht ihr nur, wenn es freigegeben ist, Telefonnummern nie.`,
+  ],
   ["Ab wie viel Jahren?", `CLINK gibt es ab ${MIN_AGE}. Das Alter bestätigst du beim Check-in.`],
   ["Was passiert mit meinem Band?", "Du gibst es beim Rausgehen ab. Es wird ausgelesen, geladen und am nächsten Abend neu vergeben."],
 ];

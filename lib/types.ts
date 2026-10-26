@@ -59,6 +59,22 @@ export type Match = {
   guest_a: string; // kleinere ID
   guest_b: string;
   erstellt: string;
+  chat_until: string; // Chat offen bis (72 h ab Match, gemeinsam verlängerbar)
+  verlaengern_a: boolean; // guest_a hat auf "Verlängern" getippt
+  verlaengern_b: boolean;
+};
+
+export type MatchKey = Pick<Match, "event_id" | "guest_a" | "guest_b">;
+
+export type Message = {
+  id: string;
+  event_id: string;
+  guest_a: string;
+  guest_b: string;
+  from_guest: string;
+  karte: string | null; // ID der Antwortkarte, sonst freier Text
+  text: string;
+  created_at: string;
 };
 
 export type Settings = {

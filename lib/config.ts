@@ -3,6 +3,12 @@
 /** [Vorschlag] Swipen ist so viele Stunden nach dem Event möglich, danach verfällt es. */
 export const SWIPE_WINDOW_HOURS = 72;
 
+/** Chat nach einem Match: so viele Stunden offen, gemeinsam um denselben Wert verlängerbar. */
+export const CHAT_WINDOW_HOURS = 72;
+
+/** Maximale Länge einer Chat-Nachricht. */
+export const MESSAGE_MAX = 500;
+
 /** Uhrzeit (lokal), ab der ein Abend als vorbei gilt; ab hier läuft die Swipe-Frist. */
 export const EVENT_END_HOUR = 6;
 

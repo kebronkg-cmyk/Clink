@@ -1,12 +1,14 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Store } from "./types";
-import type { Band, Checkin, ClinkEvent, Encounter, Guest, Lead, Match, Settings, Swipe } from "../types";
+import type { Band, Checkin, ClinkEvent, Encounter, Guest, Lead, Match, MatchKey, Message, Settings, Swipe } from "../types";
 import { DEFAULT_SETTINGS } from "../config";
 
 // Supabase-Umsetzung. Läuft nur auf dem Server mit dem Service-Role-Key;
 // Row Level Security ist in der Datenbank an, ohne öffentliche Policies.
 
 const PHOTO_BUCKET = "photos";
+
+const keyOf = (k: MatchKey) => ({ event_id: k.event_id, guest_a: k.guest_a, guest_b: k.guest_b });
 
 function check<T>(res: { data: T; error: { message: string } | null }): T {
   if (res.error) throw new Error(`Supabase: ${res.error.message}`);
@@ -122,6 +124,24 @@ export function createSupabaseStore(url: string, key: string): Store {
     },
     async insertMatch(m) {
       check(await sb.from("matches").upsert(m, { onConflict: "event_id,guest_a,guest_b", ignoreDuplicates: true }));
+    },
+
+    async updateMatch(key, patch) {
+      check(await sb.from("matches").update(patch).match(keyOf(key)));
+    },
+    async deleteMatch(key) {
+      // Nachrichten hängen per ON DELETE CASCADE am Match.
+      check(await sb.from("matches").delete().match(keyOf(key)));
+    },
+
+    async listMessages(key) {
+      return check(await sb.from("messages").select("*").match(keyOf(key)).order("created_at")) as Message[];
+    },
+    async insertMessage(m) {
+      return check(await sb.from("messages").insert(m).select().single()) as Message;
+    },
+    async deleteMessages(key) {
+      check(await sb.from("messages").delete().match(keyOf(key)));
     },
 
     async getSettings() {

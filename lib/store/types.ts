@@ -6,6 +6,8 @@ import type {
   Guest,
   Lead,
   Match,
+  MatchKey,
+  Message,
   Settings,
   Swipe,
 } from "../types";
@@ -49,6 +51,13 @@ export interface Store {
 
   listMatches(filter: { event_id?: string; guest_id?: string }): Promise<Match[]>;
   insertMatch(m: Omit<Match, "erstellt">): Promise<void>;
+  updateMatch(key: MatchKey, patch: Partial<Pick<Match, "chat_until" | "verlaengern_a" | "verlaengern_b">>): Promise<void>;
+  /** Löst ein Match auf, samt Chat. */
+  deleteMatch(key: MatchKey): Promise<void>;
+
+  listMessages(key: MatchKey): Promise<Message[]>;
+  insertMessage(m: Omit<Message, "id" | "created_at">): Promise<Message>;
+  deleteMessages(key: MatchKey): Promise<void>;
 
   getSettings(): Promise<Settings>;
   updateSettings(patch: Partial<Omit<Settings, "updated_at">>): Promise<void>;
