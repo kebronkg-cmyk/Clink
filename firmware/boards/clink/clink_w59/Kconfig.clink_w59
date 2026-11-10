@@ -1,0 +1,4 @@
+# CLINK-Armband auf Basis des KKM W59 (nRF52832-QFAA)
+
+config BOARD_CLINK_W59
+	select SOC_NRF52832_QFAA
