@@ -22,6 +22,14 @@ export const DEFAULT_SETTINGS = {
   zeitfenster_ms: 100, // ca. 0,1 s
 };
 
+/** Paartanz-Erkennung auf dem Band (Firmware): so viele Sekunden sehr nah innerhalb des Fensters. */
+export const DANCE_DEFAULTS = {
+  danceEnabled: true, // laut Spezifikation gewollt
+  danceRssi: -55, // dBm
+  danceSamples: 25,
+  danceWindowS: 60,
+};
+
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 /** Swipe-Frist für ein Event am Datum `datum` (YYYY-MM-DD): Ende des Abends + 72 h. */

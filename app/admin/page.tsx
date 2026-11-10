@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { AdminLogin, ImportForm } from "@/components/AdminForms";
+import { BandReader } from "@/components/BandReader";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { getStore } from "@/lib/store";
 import { eventStats, isOpen } from "@/lib/service";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 const TABS = [
   ["events", "Events"],
+  ["auslesen", "Auslesen"],
   ["baender", "Bänder"],
   ["import", "Import"],
   ["firmware", "Firmware"],
@@ -68,6 +70,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       </nav>
       <main className={s.main}>
         {tab === "events" && <EventsTab />}
+        {tab === "auslesen" && (
+          <section className={s.card}>
+            <h2>Bänder auslesen</h2>
+            <p className={s.muted}>
+              Am Ausgang: Band in die Nähe halten, auf „Band verbinden“ tippen und das Band in der Liste wählen. Die Begegnungen werden
+              übertragen, danach wird das Band geleert und bekommt die aktuellen Firmware-Werte. Neue Bänder werden dabei eingerichtet. Nur in
+              Chrome oder Edge auf Laptop oder Android.
+            </p>
+            <BandReader />
+          </section>
+        )}
         {tab === "baender" && <BandsTab />}
         {tab === "import" && (
           <section className={s.card}>

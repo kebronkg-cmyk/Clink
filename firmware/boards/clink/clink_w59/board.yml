@@ -1,0 +1,5 @@
+board:
+  name: clink_w59
+  full_name: CLINK W59 (KKM W59, nRF52832)
+  socs:
+    - name: nrf52832
