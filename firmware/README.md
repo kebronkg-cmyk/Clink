@@ -23,12 +23,13 @@ Gespeichert werden bis zu 1024 Begegnungen pro Abend, im internen Flash. Sie üb
 | LED rot / grün | P0.22 / P0.23 | aktiv high |
 | Vibrationsmotor | P0.27 | über MOSFET AO3400 |
 | Touch-Taste (TTP233D) | P0.08 | aktiv low |
-| LIS3DH (I2C) | SCL P0.11, SDA P0.12, INT1 P0.16, INT2 P0.15 | CS P0.14 und SA0 P0.13 setzt die Firmware auf high → Adresse 0x19 |
+| LIS3DH (I2C) | SCL P0.11, SDA P0.12, INT1 P0.16, INT2 P0.15 | CS (P0.14) und SDO/SA0 (P0.13) hängen laut Schaltplan am nRF. Die Firmware setzt beide fest auf high: I²C-Modus, Adresse **0x19** (kein Scan nötig). Stöße kommen über INT2. |
 | Akkuspannung | P0.05 / AIN3 | Teiler 1:2, 3,3–4,1 V |
 | USB/Ladekontakte erkannt | P0.29 | |
 | Debug-UART (Testpunkte) | TX P0.31, RX P0.30 | in v0.1 aus, Debug über SWD/RTT |
 | SWD (Header P1) | SWDCLK, SWDIO, VCC, GND | zum Programmieren |
-| **Nicht bestückt** | SPI-Flash FM25W04, Summer | laut Schaltplan „NC“ |
+| Summer | P0.06 (PWM) | laut Schaltplan nicht bestückt (R15/Q2/R16 „NC“); auf den Mustern prüfen. Die Firmware nutzt ihn nicht, das Band vibriert nur. |
+| **Nicht bestückt** | SPI-Flash FM25W04 | laut Release-Note „NC“, P0.17–P0.20 frei |
 
 Die Board-Definition liegt in `boards/clink/clink_w59/`.
 
@@ -47,9 +48,23 @@ Neue Firmware zu flashen **überschreibt die KKM-Firmware**. Deshalb vorher:
 
 ## Was du brauchst
 
-- **Programmiergerät:** Segger **J-Link** (z. B. J-Link EDU Mini) oder ein **Nordic nRF52-DK**, dessen eingebauter J-Link über den „Debug out“-Anschluss auch fremde Chips programmiert.
-- **Verbindung zu den SWD-Kontakten** auf der Platine (Header P1): Pogo-Pins, eine Klemme oder dünne angelötete Drähte. Verbunden werden **SWDIO, SWDCLK, GND und VCC**. VCC dient dem Programmiergerät nur als Spannungsreferenz („VTref“). Das Band läuft dabei aus seinem eigenen Akku. **Die Reihenfolge der Kontakte vorher mit dem Multimeter oder einem Foto der Platine prüfen.**
-- **Software:** [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop) mit **Programmer**-App (einfachster Weg) oder die Kommandozeilen-Werkzeuge `nrfjprog` bzw. `nrfutil`.
+- **Programmiergerät:** **nRF52840 DK** (hat einen J-Link eingebaut) oder ein Segger J-Link.
+- **Verbindung zu den 4 SWD-Kontakten** auf der Platine (Header P1): Pogo-Pins, eine Klemme oder dünne angelötete Drähte.
+- **Software:** [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nRF-Connect-for-Desktop) mit **Programmer**-App (einfachster Weg) oder `nrfutil` auf der Kommandozeile.
+
+### Anschluss an das nRF52840 DK (Stiftleiste P20 „Debug out“)
+
+| Band, Header P1 | Signal | nRF52840 DK, P20 |
+| --- | --- | --- |
+| 1 (meist der **eckige** Kontakt) | VCC_nRF | **VTG** (nur Spannungserkennung) |
+| 2 | GND | **GND** |
+| 3 | SWDCLK | **SWDCLK** |
+| 4 | SWDIO | **SWDIO** |
+
+- **Vorher prüfen:** Pin 2 hat mit dem Multimeter Durchgang zum Akku-Minus.
+- **Band vorher laden.** Das DK liefert keinen Strom ans Band, das Band läuft aus seinem eigenen Akku.
+- Sobald an VTG Spannung anliegt, programmiert der J-Link des DK automatisch das **Band** statt des eigenen Chips auf dem DK.
+- Das DK per USB an den Rechner anschließen und einschalten.
 
 ## Flashen (ohne selbst zu bauen)
 
@@ -64,7 +79,10 @@ Fertig gebaute Dateien liegen in `dist/`:
 
 **Mit der Kommandozeile:**
 ```bash
-nrfjprog --program dist/clink_w59_v0.1.0.hex --chiperase --verify --reset
+nrfutil device program --firmware dist/clink_w59_v0.1.0.hex --options chip_erase_mode=ERASE_ALL,verify=VERIFY_READ
+nrfutil device reset
+# älteres Werkzeug, gleiche Wirkung:
+nrfjprog -f NRF52 --program dist/clink_w59_v0.1.0.hex --chiperase --verify --reset
 ```
 
 Danach blinkt das Band kurz rot/grün im Wechsel, weil es noch nicht eingerichtet ist.
