@@ -25,13 +25,14 @@ Ohne Supabase-Zugangsdaten läuft die Seite im **Demo-Modus**: Beispieldaten im 
 | `/app/matches` | Gegenseitige Matches mit Chat-Vorschau und Restzeit |
 | `/app/chat/<event>/<gast>` | 72-h-Chat: erste Nachricht per Antwortkarte (`lib/cards.ts`), dann frei; gemeinsam um 72 h verlängerbar; Match auflösen |
 | `/admin` | Events, Check-ins, Bänder, CSV-Import, Firmware-Werte, Statistik, Anfragen |
+| `/admin?tab=auslesen` | Bänder per Web Bluetooth auslesen und neue Bänder einrichten (Chrome/Edge auf Laptop oder Android) |
 | `/admin/qr` | Druckbogen mit einem QR-Code pro Band |
 | `/impressum`, `/datenschutz` | Entwürfe mit markierten Platzhaltern |
 
 ## Produktion
 
 1. Supabase-Projekt mit Region EU anlegen, `supabase/schema.sql` im SQL-Editor ausführen.
-2. Umgebungsvariablen nach `.env.example` setzen (`SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN`, `NEXT_PUBLIC_SITE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Ohne `SESSION_SECRET` startet die Produktion bewusst nicht.
+2. Umgebungsvariablen nach `.env.example` setzen (`SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN`, `BAND_MASTER_KEY`, `NEXT_PUBLIC_SITE_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Ohne `SESSION_SECRET` startet die Produktion bewusst nicht.
 3. Auf Vercel oder Netlify deployen, Domain `clink.wedance.vip`.
 
 ## Cloudflare (Workers)
@@ -44,6 +45,10 @@ npm run deploy    # direkt deployen (wrangler login nötig)
 ```
 
 Mit Git-Anbindung im Cloudflare-Dashboard (Workers, nicht Pages) reichen die Standard-Befehle: `npm run build` (baut für Cloudflare) und `npx wrangler deploy`. Lokal entwickeln weiter mit `npm run dev`; der reine Next.js-Build ist `npm run build:next`. `SESSION_SECRET`, `ADMIN_PASSWORD`, `GATEWAY_TOKEN` (und später die Supabase-Werte) als Variablen/Secrets des Workers setzen, `NEXT_PUBLIC_SITE_URL` als Build-Variable.
+
+## Armband-Firmware
+
+Liegt in [`firmware/`](firmware/README.md): Zephyr/nRF Connect SDK für das KKM W59 (nRF52832), mit Anleitung zum Flashen, fertigen `.hex`-Dateien und dem Bluetooth-Protokoll ([`firmware/PROTOCOL.md`](firmware/PROTOCOL.md)). Für das Auslesen braucht die Website zusätzlich das Secret `BAND_MASTER_KEY`.
 
 ## Gateway-API (Ladeschrank)
 

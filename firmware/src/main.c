@@ -229,6 +229,7 @@ int main(void)
 /* Bei einem schweren Fehler neu starten statt stehen zu bleiben (Debug-Builds: anhalten). */
 #include <zephyr/fatal.h>
 #include <zephyr/sys/reboot.h>
+#include <zephyr/logging/log_ctrl.h>
 
 void k_sys_fatal_error_handler(unsigned int reason, const struct arch_esf *esf)
 {
